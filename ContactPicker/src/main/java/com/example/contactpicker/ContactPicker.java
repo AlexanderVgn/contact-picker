@@ -1,25 +1,23 @@
 package com.example.contactpicker;
 
-import android.content.CursorLoader;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Activity;
 import android.provider.Contacts;
 import android.view.Menu;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
-import java.net.URI;
-
-public class MainActivity extends Activity {
+public class ContactPicker extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.contactpicker);
 
         Intent intent=getIntent();
         String dataPath = intent.getData().toString();
@@ -37,6 +35,19 @@ public class MainActivity extends Activity {
                 to);
         ListView lv = (ListView)findViewById(R.id.contactListView);
         lv.setAdapter(adapter);
+
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                c.moveToPosition(position);
+                int rowId = c.getInt(c.getColumnIndexOrThrow("_id"));
+                Uri outURI = Uri.parse(data.toString()+rowId);
+                Intent outData = new Intent();
+                outData.setData(outURI);
+                setResult(Activity.RESULT_OK, outData);
+                finish();
+            }
+        });
     }
 
     @Override
